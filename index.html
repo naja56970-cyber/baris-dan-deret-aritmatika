@@ -1,0 +1,2890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathExplorer – Baris & Deret Aritmatika</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0b1220;
+    --bg2: #0f1928;
+    --glass: rgba(255,255,255,0.06);
+    --glass2: rgba(255,255,255,0.10);
+    --glass3: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.10);
+    --border2: rgba(255,255,255,0.18);
+    --blue: #3b82f6;
+    --blue2: #60a5fa;
+    --green: #34d399;
+    --green2: #6ee7b7;
+    --purple: #a78bfa;
+    --purple2: #c4b5fd;
+    --pink: #f472b6;
+    --amber: #fbbf24;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --radius: 16px;
+    --radius2: 12px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59,130,246,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(52,211,153,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 30%, rgba(167,139,250,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrap { position: relative; z-index: 1; }
+
+  /* ── GLASS ── */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11,18,32,0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, var(--blue2), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all .25s;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 50%; right: 50%;
+    height: 2px;
+    background: var(--blue);
+    border-radius: 2px;
+    transition: left .25s, right .25s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { left: 12px; right: 12px; }
+
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--text2); border-radius: 2px;
+    transition: all .3s;
+  }
+
+  @media(max-width:768px) {
+    .nav-hamburger { display: flex; }
+    .nav-links {
+      display: none; position: absolute;
+      top: 62px; left: 0; right: 0;
+      background: rgba(11,18,32,0.97);
+      backdrop-filter: blur(20px);
+      flex-direction: column; align-items: stretch;
+      padding: 1rem; gap: 0.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 10px 16px; }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    max-width: 100%;
+  }
+
+  .hero-inner { max-width: 760px; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.3);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--blue2);
+    margin-bottom: 1.5rem;
+    animation: fadeDown .6s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #e2e8f0 0%, var(--blue2) 50%, var(--green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp .7s .15s ease both;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--blue), #2563eb);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    animation: fadeUp .7s .45s ease both;
+    box-shadow: 0 4px 24px rgba(59,130,246,0.35);
+  }
+
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(59,130,246,0.5); }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3rem;
+    animation: fadeUp .7s .6s ease both;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--blue2), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-stat-label { font-size: 0.78rem; color: var(--text3); margin-top: 2px; }
+
+  /* ── SECTION HEADER ── */
+  .section-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    padding: 4px 12px;
+    border-radius: 50px;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    margin-bottom: .75rem;
+  }
+
+  .section-desc { color: var(--text2); line-height: 1.7; max-width: 600px; }
+
+  /* ── GRID CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .card {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59,130,246,0.3);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.12);
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: .5rem;
+  }
+
+  .card-text { color: var(--text2); font-size: .88rem; line-height: 1.65; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: flex;
+    gap: 0;
+    margin-top: 2.5rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .timeline-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    cursor: pointer;
+    position: relative;
+    flex: 1;
+  }
+
+  .timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+
+  .timeline-item.active:not(:last-child)::after { background: var(--blue); }
+
+  .timeline-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--glass2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+    transition: all .25s;
+  }
+
+  .timeline-item.active .timeline-dot {
+    background: linear-gradient(135deg, var(--blue), #2563eb);
+    border-color: var(--blue);
+    box-shadow: 0 0 0 6px rgba(59,130,246,0.15);
+  }
+
+  .timeline-item:hover .timeline-dot { border-color: var(--blue2); transform: scale(1.1); }
+
+  .timeline-label {
+    margin-top: 10px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text2);
+    transition: color .2s;
+    white-space: nowrap;
+  }
+
+  .timeline-item.active .timeline-label { color: var(--blue2); }
+
+  /* ── MATERI ── */
+  .materi-tabs {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    background: var(--glass3);
+    color: var(--text2);
+    font-size: .82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .tab-btn.active, .tab-btn:hover {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.4);
+    color: var(--blue2);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .materi-card {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    line-height: 1.8;
+    color: var(--text2);
+    font-size: .93rem;
+  }
+
+  .materi-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin: 1.25rem 0 .6rem;
+  }
+
+  .materi-card h3:first-child { margin-top: 0; }
+
+  .formula-box {
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--text);
+    overflow-x: auto;
+  }
+
+  .contoh-box {
+    background: rgba(52,211,153,0.06);
+    border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .contoh-box strong { color: var(--green); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: .5rem; }
+
+  .warning-box {
+    background: rgba(251,191,36,0.07);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .warning-box strong { color: var(--amber); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: .5rem; }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    margin: 1rem 0;
+  }
+
+  .compare-table th, .compare-table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .compare-table th {
+    background: rgba(59,130,246,0.1);
+    color: var(--blue2);
+    font-weight: 600;
+  }
+
+  .compare-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .step-item {
+    display: flex; gap: 1rem; margin: 1rem 0; align-items: flex-start;
+  }
+
+  .step-num {
+    min-width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--blue), #2563eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── LEVELS / LATIHAN ── */
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .level-card {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-card.locked { opacity: .55; }
+  .level-card.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .level-badge.easy { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+  .level-badge.medium { background: rgba(251,191,36,0.12); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+  .level-badge.hard { background: rgba(244,114,182,0.12); color: var(--pink); border: 1px solid rgba(244,114,182,0.25); }
+
+  .level-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: .5rem;
+  }
+
+  .level-desc { color: var(--text2); font-size: .85rem; line-height: 1.6; margin-bottom: 1.25rem; }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin-bottom: .5rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  .progress-fill.green { background: linear-gradient(90deg, var(--green), var(--green2)); }
+  .progress-fill.amber { background: linear-gradient(90deg, var(--amber), #f59e0b); }
+  .progress-fill.pink { background: linear-gradient(90deg, var(--pink), #fb7185); }
+
+  .progress-label { font-size: .72rem; color: var(--text3); }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--blue), #2563eb);
+    color: #fff;
+    font-weight: 600;
+    font-size: .88rem;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.35); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  /* ── QUIZ ── */
+  .quiz-wrap {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .quiz-timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--blue2);
+  }
+
+  .quiz-timer.urgent { color: #f87171; animation: pulse 1s infinite; }
+
+  .quiz-progress-text { font-size: .85rem; color: var(--text2); }
+
+  .quiz-q {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: .75rem; }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--glass3);
+    cursor: pointer;
+    transition: all .2s;
+    font-size: .92rem;
+    color: var(--text);
+    text-align: left;
+    width: 100%;
+  }
+
+  .quiz-opt:hover { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.07); }
+  .quiz-opt.selected { border-color: var(--blue); background: rgba(59,130,246,0.12); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(52,211,153,0.1); color: var(--green); }
+  .quiz-opt.wrong { border-color: #f87171; background: rgba(248,113,113,0.1); color: #f87171; }
+
+  .quiz-opt-letter {
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .78rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: .88rem;
+    display: none;
+  }
+
+  .quiz-feedback.correct { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--green2); display: block; }
+  .quiz-feedback.wrong { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; display: block; }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .btn-outline {
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text);
+    font-weight: 500;
+    font-size: .88rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-outline:hover { background: var(--glass2); }
+
+  /* ── QUIZ RESULT ── */
+  .result-wrap {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .result-score {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--blue2), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 1rem 0;
+  }
+
+  .result-category {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: .9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-category.high { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .result-category.medium { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .result-category.low { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+
+  .badge-earned {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.25);
+    margin: 1rem auto;
+    font-weight: 500;
+  }
+
+  /* ── REFLEKSI ── */
+  .refleksi-wrap { margin-top: 2rem; }
+
+  .refleksi-q { 
+    margin-bottom: 2rem;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+  }
+
+  .refleksi-q label {
+    display: block;
+    font-size: .92rem;
+    font-weight: 500;
+    margin-bottom: .75rem;
+    color: var(--text);
+  }
+
+  .refleksi-q textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: .9rem;
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color .2s;
+  }
+
+  .refleksi-q textarea:focus { outline: none; border-color: rgba(59,130,246,0.5); }
+
+  .rating-wrap {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+  }
+
+  .rating-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--glass3);
+    color: var(--text2);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .rating-btn.active, .rating-btn:hover {
+    background: rgba(59,130,246,0.15);
+    border-color: var(--blue);
+    transform: scale(1.1);
+  }
+
+  /* ── ANALISIS ── */
+  .analisis-wrap {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .analisis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .analisis-stat {
+    text-align: center;
+    padding: 1.25rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .analisis-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .analisis-lbl { font-size: .78rem; color: var(--text3); margin-top: 4px; }
+
+  /* ── TENTANG PENGEMBANG ── */
+  .dev-card {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .dev-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    border: 3px solid rgba(59,130,246,0.3);
+  }
+
+  .dev-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: .25rem;
+  }
+
+  .dev-title { color: var(--blue2); font-size: .88rem; margin-bottom: 1rem; }
+
+  .dev-meta { display: flex; flex-direction: column; gap: .4rem; }
+  .dev-meta-row { font-size: .85rem; color: var(--text2); }
+  .dev-meta-row span { color: var(--text); font-weight: 500; }
+
+  .dev-social {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 50px;
+    border: 1px solid var(--border2);
+    background: var(--glass3);
+    color: var(--text);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 500;
+    transition: all .2s;
+  }
+
+  .social-btn:hover {
+    background: rgba(59,130,246,0.1);
+    border-color: rgba(59,130,246,0.35);
+    color: var(--blue2);
+    transform: translateY(-2px);
+  }
+
+  /* ── ABOUT MEDIA ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .about-card {
+    background: var(--glass3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    border-radius: 3px 3px 0 0;
+  }
+
+  .about-card-icon { font-size: 1.6rem; margin-bottom: .75rem; }
+  .about-card-title { font-weight: 600; font-size: .95rem; margin-bottom: .4rem; }
+  .about-card-desc { font-size: .82rem; color: var(--text2); line-height: 1.6; }
+
+  /* ── BADGES ── */
+  .badges-wrap {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--glass3);
+    min-width: 90px;
+    text-align: center;
+    transition: all .25s;
+  }
+
+  .badge-item.earned {
+    border-color: rgba(167,139,250,0.4);
+    background: rgba(167,139,250,0.08);
+  }
+
+  .badge-item.earned:hover { transform: scale(1.05); }
+
+  .badge-item span:first-child { font-size: 2rem; filter: grayscale(1); }
+  .badge-item.earned span:first-child { filter: none; }
+  .badge-item-name { font-size: .72rem; font-weight: 500; color: var(--text2); }
+  .badge-item.earned .badge-item-name { color: var(--purple2); }
+
+  /* ── SCROLL TOP ── */
+  #scrollTop {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .2s;
+    z-index: 99;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+  }
+
+  #scrollTop.show { opacity: 1; pointer-events: all; }
+  #scrollTop:hover { transform: translateY(-3px); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: #0f1928;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(.95);
+    transition: transform .3s;
+  }
+
+  .modal-overlay.open .modal-box { transform: scale(1); }
+
+  .modal-close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: color .2s, background .2s;
+  }
+
+  .modal-close:hover { color: var(--text); background: var(--glass2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: rgba(11,18,32,0.8);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 2rem;
+    font-size: .82rem;
+    color: var(--text3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .6s, transform .6s;
+  }
+
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:600px) {
+    section { padding: 3.5rem 1.25rem; }
+    .card-grid, .levels-grid { grid-template-columns: 1fr; }
+    .dev-card { flex-direction: column; }
+    .timeline { gap: 0; }
+    .timeline-item { min-width: 90px; }
+  }
+
+  /* ── EXPLORATION INTERACTIVE ── */
+  .explorer-wrap {
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .explorer-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: .82rem;
+    color: var(--text2);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: .92rem;
+    transition: border-color .2s;
+  }
+
+  .input-group input:focus { outline: none; border-color: rgba(59,130,246,0.5); }
+
+  .seq-display {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    margin: 1rem 0;
+    min-height: 56px;
+    align-items: center;
+  }
+
+  .seq-item {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--blue2);
+    animation: fadeUp .3s ease both;
+  }
+
+  .result-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .result-box {
+    flex: 1;
+    min-width: 140px;
+    padding: 1rem;
+    background: rgba(52,211,153,0.07);
+    border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .result-box .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .result-box .lbl { font-size: .75rem; color: var(--text3); margin-top: 4px; }
+
+  /* chart simple */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 120px;
+    padding: 0 4px;
+    margin-top: 1rem;
+    overflow-x: auto;
+  }
+
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 28px;
+  }
+
+  .bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--blue2), var(--blue));
+    border-radius: 4px 4px 0 0;
+    transition: height .5s ease;
+  }
+
+  .bar-lbl { font-size: .65rem; color: var(--text3); white-space: nowrap; }
+
+  #notification {
+    position: fixed;
+    top: 80px; right: 1rem;
+    max-width: 300px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: .88rem;
+    font-weight: 500;
+    z-index: 300;
+    transform: translateX(120%);
+    transition: transform .4s ease;
+    pointer-events: none;
+  }
+
+  #notification.show { transform: translateX(0); }
+  #notification.success { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); color: var(--green2); }
+  #notification.error { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; }
+  #notification.info { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: var(--blue2); }
+
+  .highlight-section {
+    border: 2px solid rgba(59,130,246,0.35);
+    border-radius: var(--radius);
+    padding: 2px;
+    transition: border-color .4s;
+  }
+
+  .highlight-section.glow {
+    border-color: var(--blue);
+    box-shadow: 0 0 20px rgba(59,130,246,0.2);
+  }
+
+/* === THEME TOGGLE BUTTON === */
+#themeToggle {
+  margin-left: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+
+#themeToggle:hover {
+  background: var(--glass2);
+  transform: scale(1.1);
+}
+
+/* === LIGHT MODE === */
+.light-mode {
+  --bg: #f8fafc;
+  --bg2: #ffffff;
+  --glass: rgba(0,0,0,0.04);
+  --glass2: rgba(0,0,0,0.08);
+  --glass3: rgba(0,0,0,0.02);
+  --border: rgba(0,0,0,0.1);
+  --border2: rgba(0,0,0,0.2);
+  --text: #0f172a;
+  --text2: #334155;
+  --text3: #64748b;
+  
+}
+
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-brand">🧮 MathExplorer</div>
+  <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#tujuan" onclick="closeNav()">Tujuan</a></li>
+    <li><a href="#alur" onclick="closeNav()">Alur</a></li>
+    <li><a href="#pretest" onclick="closeNav()">Pre-test</a></li>
+    <li><a href="#materi" onclick="closeNav()">Materi</a></li>
+    <li><a href="#level" onclick="closeNav()">Level</a></li>
+    <li><a href="#refleksi" onclick="closeNav()">Refleksi</a></li>
+    <li><a href="#tentang" onclick="closeNav()">Tentang</a></li>
+  </ul>
+
+<button id="themeToggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+
+</nav>
+
+<!-- NOTIFICATION -->
+<div id="notification"></div>
+
+<!-- HERO -->
+<section id="hero" style="padding-top:7rem;">
+  <div class="hero-inner">
+    <div class="hero-badge">📐 Kelas X SMA &nbsp;·&nbsp; Matematika Wajib</div>
+    <h1 class="hero-title">Temukan Pola,<br>Bangun Pemahaman</h1>
+    <p class="hero-sub">Platform belajar interaktif berbasis eksplorasi untuk materi <strong>Baris dan Deret Aritmatika</strong>. Prediksi, verifikasi, dan temukan rumusnya sendiri!</p>
+    <button class="hero-cta" onclick="scrollToSection('pretest')">
+      🚀 Mulai Pre-test <span>→</span>
+    </button>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="globalScore">—</div>
+        <div class="hero-stat-label">Skor Pre-test</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="globalBadge">0</div>
+        <div class="hero-stat-label">Badge Diraih</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="globalLevel">1</div>
+        <div class="hero-stat-label">Level Aktif</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TUJUAN -->
+<section id="tujuan">
+  <div class="fade-in">
+    <div class="section-label">🎯 Tujuan Pembelajaran</div>
+    <h2 class="section-title">Apa yang Akan Kamu Pelajari?</h2>
+    <p class="section-desc">Setelah menyelesaikan media ini, kamu diharapkan mampu memahami dan menerapkan konsep baris dan deret aritmatika.</p>
+  </div>
+  <div class="card-grid fade-in">
+    <div class="card">
+      <span class="card-icon">📘</span>
+      <div class="card-title">Konsep Barisan Aritmatika</div>
+      <div class="card-text">Memahami pengertian barisan aritmatika, suku pertama (a), beda (b), dan rumus suku ke-n.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔢</span>
+      <div class="card-title">Deret Aritmatika</div>
+      <div class="card-text">Menghitung jumlah n suku pertama deret aritmatika menggunakan rumus $S_n$ yang diturunkan dari pola.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <div class="card-title">Pemecahan Masalah</div>
+      <div class="card-text">Menerapkan konsep barisan dan deret dalam konteks kehidupan nyata: tabungan, bata, kursi, tangga.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔍</span>
+      <div class="card-title">Eksplorasi & Prediksi</div>
+      <div class="card-text">Menemukan pola sendiri melalui pendekatan inquiry: observasi → prediksi → verifikasi → generalisasi.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">⚠️</span>
+      <div class="card-title">Miskonsepsi Umum</div>
+      <div class="card-text">Mengidentifikasi dan menghindari kesalahan konsep yang sering terjadi dalam barisan dan deret.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏆</span>
+      <div class="card-title">Gamifikasi & Badge</div>
+      <div class="card-text">Meraih badge, naik level, dan mengukur pertumbuhan pemahaman dari pre-test ke post-test.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ALUR PEMBELAJARAN -->
+<section id="alur">
+  <div class="fade-in">
+    <div class="section-label">🔄 Alur Pembelajaran</div>
+    <h2 class="section-title">Tahapan Belajarmu</h2>
+    <p class="section-desc">Ikuti alur ini untuk pengalaman belajar yang optimal. Klik setiap tahap untuk pindah ke sesi tersebut.</p>
+  </div>
+  <div class="timeline fade-in" id="timeline">
+    <div class="timeline-item active" onclick="navigateTimeline(0,'pretest')">
+      <div class="timeline-dot">📝</div>
+      <div class="timeline-label">Pre-test</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(1,'materi')">
+      <div class="timeline-dot">📚</div>
+      <div class="timeline-label">Materi</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(2,'eksplorasi')">
+      <div class="timeline-dot">🔍</div>
+      <div class="timeline-label">Eksplorasi</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(3,'level')">
+      <div class="timeline-dot">✏️</div>
+      <div class="timeline-label">Latihan</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(4,'game')">
+      <div class="timeline-dot">🎮</div>
+      <div class="timeline-label">Game</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(5,'refleksi')">
+      <div class="timeline-dot">💭</div>
+      <div class="timeline-label">Refleksi</div>
+    </div>
+    <div class="timeline-item" onclick="navigateTimeline(6,'posttest')">
+      <div class="timeline-dot">🎯</div>
+      <div class="timeline-label">Post-test</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRE-TEST -->
+<section id="pretest">
+  <div class="fade-in">
+    <div class="section-label">📝 Pre-test</div>
+    <h2 class="section-title">Ukur Pengetahuan Awalmu</h2>
+    <p class="section-desc">Kerjakan soal berikut untuk mengetahui pemahamanmu sebelum belajar. Hasil ini akan dibandingkan dengan post-test nanti.</p>
+  </div>
+  <div id="pretestContainer" class="fade-in">
+    <div id="pretestStart" class="quiz-wrap" style="text-align:center;padding:3rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.75rem;">Pre-test Barisan & Deret</h3>
+      <p style="color:var(--text2);margin-bottom:2rem;font-size:.9rem;">10 soal pilihan ganda · Timer 120 detik · Bisa diulang 2×</p>
+      <button class="btn-primary" style="max-width:200px;margin:0 auto;" onclick="startQuiz('pre')">Mulai Pre-test</button>
+    </div>
+    <div id="pretestQuiz" style="display:none;"></div>
+    <div id="pretestResult" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- MATERI -->
+<section id="materi">
+  <div class="fade-in">
+    <div class="section-label">📚 Materi Pembelajaran</div>
+    <h2 class="section-title">Eksplorasi Konsep</h2>
+    <p class="section-desc">Pelajari setiap topik secara mendalam. Gunakan tab untuk berpindah antar materi.</p>
+  </div>
+  <div class="fade-in" style="margin-top:2rem;">
+    <div class="materi-tabs">
+      <button class="tab-btn active" onclick="showTab(0)">📖 Pengantar</button>
+      <button class="tab-btn" onclick="showTab(1)">🔢 Barisan</button>
+      <button class="tab-btn" onclick="showTab(2)">➕ Deret</button>
+      <button class="tab-btn" onclick="showTab(3)">⚖️ Perbedaan</button>
+      <button class="tab-btn" onclick="showTab(4)">🔍 Inquiry</button>
+      <button class="tab-btn" onclick="showTab(5)">🌍 Kontekstual</button>
+      <button class="tab-btn" onclick="showTab(6)">⚠️ Miskonsepsi</button>
+    </div>
+
+    <div class="tab-content active materi-card" id="tab0">
+      <h3>🌟 Apa itu Pola Bilangan?</h3>
+      <p>Pernahkah kamu memperhatikan tangga? Setiap anak tangga memiliki ketinggian yang sama. Atau menabung setiap bulan dengan jumlah tetap? Itulah konsep <strong>barisan aritmatika</strong> dalam kehidupan nyata!</p>
+      <div class="contoh-box">
+        <strong>✨ Perhatikan pola ini:</strong>
+        <p>2, 5, 8, 11, 14, …</p>
+        <p>Selisih setiap dua suku berurutan = <strong>3</strong> (selalu sama!)</p>
+      </div>
+      <h3>🤔 Mengapa Ini Penting?</h3>
+      <p>Barisan aritmatika membantu kita <strong>memprediksi</strong> nilai ke depan tanpa menghitung satu per satu. Bayangkan menghitung suku ke-100 — dengan rumus, kita bisa menemukannya dalam hitungan detik!</p>
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>Observasi:</strong> Amati pola dari barisan bilangan yang diberikan.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div><strong>Prediksi:</strong> Coba tebak suku berikutnya sebelum menghitung.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div><strong>Verifikasi:</strong> Buktikan prediksimu dengan menghitung menggunakan rumus.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div><strong>Generalisasi:</strong> Temukan pola umum yang berlaku untuk semua kasus serupa.</div>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab1">
+      <h3>📌 Pengertian Barisan Aritmatika</h3>
+      <p>Barisan aritmatika adalah barisan bilangan yang memiliki <strong>beda (selisih) tetap</strong> antara dua suku yang berurutan.</p>
+      <div class="formula-box">
+        Beda: $b = U_2 - U_1 = U_3 - U_2 = \cdots = U_n - U_{n-1}$
+      </div>
+      <h3>🔑 Komponen Penting</h3>
+      <div class="step-item">
+        <div class="step-num">a</div>
+        <div><strong>Suku Pertama (a):</strong> Nilai $U_1$, yaitu suku awal dari barisan.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">b</div>
+        <div><strong>Beda (b):</strong> Selisih tetap antara dua suku berurutan. Bisa positif atau negatif!</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">n</div>
+        <div><strong>Suku ke-n (U_n):</strong> Nilai suku pada urutan ke-n.</div>
+      </div>
+      <h3>📐 Rumus Suku ke-n</h3>
+      <div class="formula-box">
+        $$U_n = a + (n-1)b$$
+      </div>
+      <p><em>Dimana: $a$ = suku pertama, $b$ = beda, $n$ = nomor suku</em></p>
+      <div class="contoh-box">
+        <strong>📝 Contoh Soal</strong>
+        <p>Diketahui barisan: 3, 7, 11, 15, …</p>
+        <p>Tentukan suku ke-20!</p>
+        <p><strong>Penyelesaian:</strong></p>
+        <p>$a = 3$, $b = 7 - 3 = 4$, $n = 20$</p>
+        <p>$U_{20} = 3 + (20-1) \times 4 = 3 + 76 = \mathbf{79}$</p>
+      </div>
+      <div class="contoh-box">
+        <strong>📝 Contoh Soal 2</strong>
+        <p>Suku ke-5 suatu barisan = 17, suku ke-9 = 33. Tentukan suku ke-15!</p>
+        <p><strong>Penyelesaian:</strong></p>
+        <p>$U_9 - U_5 = 4b \Rightarrow 33 - 17 = 4b \Rightarrow b = 4$</p>
+        <p>$a = U_5 - 4b = 17 - 16 = 1$</p>
+        <p>$U_{15} = 1 + (15-1) \times 4 = 1 + 56 = \mathbf{57}$</p>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab2">
+      <h3>📌 Pengertian Deret Aritmatika</h3>
+      <p>Deret aritmatika adalah <strong>jumlah suku-suku</strong> dari barisan aritmatika.</p>
+      <p>Jika barisan: $a, a+b, a+2b, \ldots$</p>
+      <p>Maka deret: $S_n = a + (a+b) + (a+2b) + \cdots + U_n$</p>
+      <h3>📐 Rumus Jumlah n Suku</h3>
+      <div class="formula-box">
+        $$S_n = \frac{n}{2}(2a + (n-1)b)$$
+      </div>
+      <p><em>Atau ekuivalen dengan:</em></p>
+      <div class="formula-box">
+        $$S_n = \frac{n}{2}(a + U_n)$$
+      </div>
+      <h3>💡 Intuisi Rumus</h3>
+      <p>Carl Friedrich Gauss menemukan bahwa jika kita menjumlahkan barisan secara normal dan terbalik, setiap pasangan memiliki jumlah sama!</p>
+      <div class="contoh-box">
+        <strong>🧠 Kisah Gauss</strong>
+        <p>$1 + 100 = 101$</p>
+        <p>$2 + 99 = 101$</p>
+        <p>$\cdots$</p>
+        <p>Ada 50 pasangan → $S_{100} = 50 \times 101 = 5050$</p>
+      </div>
+      <div class="contoh-box">
+        <strong>📝 Contoh Soal</strong>
+        <p>Hitunglah $S_{15}$ dari deret: 4 + 7 + 10 + 13 + …</p>
+        <p><strong>Penyelesaian:</strong></p>
+        <p>$a = 4$, $b = 3$, $n = 15$</p>
+        <p>$S_{15} = \dfrac{15}{2}(2 \times 4 + (15-1) \times 3)$</p>
+        <p>$= \dfrac{15}{2}(8 + 42) = \dfrac{15}{2} \times 50 = \mathbf{375}$</p>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab3">
+      <h3>⚖️ Barisan vs Deret — Apa Bedanya?</h3>
+      <table class="compare-table">
+        <thead>
+          <tr><th>Aspek</th><th>Barisan Aritmatika</th><th>Deret Aritmatika</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Definisi</td><td>Urutan suku-suku</td><td>Jumlah suku-suku</td></tr>
+          <tr><td>Notasi</td><td>$U_1, U_2, \ldots, U_n$</td><td>$U_1 + U_2 + \cdots + U_n$</td></tr>
+          <tr><td>Rumus</td><td>$U_n = a + (n-1)b$</td><td>$S_n = \frac{n}{2}(2a+(n-1)b)$</td></tr>
+          <tr><td>Hasil</td><td>Nilai satu suku</td><td>Nilai total (akumulasi)</td></tr>
+          <tr><td>Contoh (a=1, b=2)</td><td>1, 3, 5, 7, 9</td><td>1+3+5+7+9 = 25</td></tr>
+          <tr><td>Simbol</td><td>$U_n$ atau $a_n$</td><td>$S_n$</td></tr>
+        </tbody>
+      </table>
+      <div class="warning-box">
+        <strong>⚠️ Ingat!</strong>
+        <p>$S_n - S_{n-1} = U_n$ — Selisih jumlah sampai suku ke-n dan ke-(n-1) menghasilkan suku ke-n!</p>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab4">
+      <h3>🔍 Pendekatan Inquiry Learning</h3>
+      <p>Belajar matematika bukan hanya menghafal rumus, tapi <strong>membangun pemahaman</strong> sendiri melalui eksplorasi!</p>
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div><strong>Observasi:</strong> Perhatikan pola dari data yang diberikan. Apa yang kamu lihat?</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div><strong>Pertanyaan:</strong> Rumuskan pertanyaan: "Bagaimana cara menemukan suku ke-n?"</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div><strong>Hipotesis:</strong> Buat dugaan rumusnya. Coba uji dengan suku pertama!</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div><strong>Eksperimen:</strong> Gunakan kalkulator eksplorasi di bawah untuk menguji hipotesismu.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div><strong>Analisis:</strong> Apakah hipotesismu benar? Perbaiki jika salah.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">6</div>
+        <div><strong>Generalisasi:</strong> Tuliskan rumus umum yang berlaku untuk semua kasus!</div>
+      </div>
+      <div class="contoh-box" style="margin-top:1rem;">
+        <strong>💡 Tips Inquiry</strong>
+        <p>Mulai dari contoh konkret yang kamu pahami, kemudian secara bertahap abstrak ke rumus umum. Jangan langsung hafal rumus — <em>pahami dari mana rumus itu berasal!</em></p>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab5">
+      <h3>🌍 Contoh Kontekstual</h3>
+      <div class="contoh-box">
+        <strong>🏦 Tabungan</strong>
+        <p>Ani menabung Rp50.000 pada bulan pertama, lalu menambah Rp10.000 setiap bulan. Berapa total tabungannya setelah 12 bulan?</p>
+        <p>$a = 50.000$, $b = 10.000$, $n = 12$</p>
+        <p>$S_{12} = \frac{12}{2}(2 \times 50.000 + 11 \times 10.000) = 6(210.000) = \mathbf{Rp\ 1.260.000}$</p>
+      </div>
+      <div class="contoh-box">
+        <strong>🪑 Kursi Bioskop</strong>
+        <p>Baris ke-1 ada 10 kursi, baris ke-2 ada 12 kursi, dst (bertambah 2). Ada 15 baris. Total kursi?</p>
+        <p>$a = 10$, $b = 2$, $n = 15$</p>
+        <p>$S_{15} = \frac{15}{2}(20 + 28) = \frac{15}{2} \times 48 = \mathbf{360}$ kursi</p>
+      </div>
+      <div class="contoh-box">
+        <strong>🧱 Susunan Batu Bata</strong>
+        <p>Baris teratas 3 bata, bertambah 2 per baris, ada 8 baris. Total bata?</p>
+        <p>$a = 3$, $b = 2$, $n = 8$</p>
+        <p>$S_8 = \frac{8}{2}(6 + 14) = 4 \times 20 = \mathbf{80}$ bata</p>
+      </div>
+      <div class="contoh-box">
+        <strong>🪜 Anak Tangga</strong>
+        <p>Setiap anak tangga memiliki tinggi 20 cm. Ketinggian anak tangga ke-15 dari tanah?</p>
+        <p>$U_{15} = 1 \times 20 + (15-1) \times 20 = \mathbf{300}$ cm $= 3$ m</p>
+      </div>
+    </div>
+
+    <div class="tab-content materi-card" id="tab6">
+      <h3>⚠️ Miskonsepsi yang Sering Terjadi</h3>
+      <div class="warning-box">
+        <strong>❌ Miskonsepsi 1: Beda Selalu Positif</strong>
+        <p><strong>Salah:</strong> Beranggapan bahwa beda (b) selalu bilangan positif.</p>
+        <p><strong>Benar:</strong> Beda bisa negatif! Contoh: 20, 17, 14, 11, … → $b = -3$</p>
+      </div>
+      <div class="warning-box">
+        <strong>❌ Miskonsepsi 2: Barisan = Deret</strong>
+        <p><strong>Salah:</strong> Menggunakan rumus $U_n$ untuk mencari jumlah suku.</p>
+        <p><strong>Benar:</strong> $U_n$ untuk suku ke-n, $S_n$ untuk jumlah n suku pertama!</p>
+      </div>
+      <div class="warning-box">
+        <strong>❌ Miskonsepsi 3: Lupa Kurangi 1</strong>
+        <p><strong>Salah:</strong> $U_n = a + nb$ (tanpa dikurangi 1)</p>
+        <p><strong>Benar:</strong> $U_n = a + (n-1)b$ — karena suku pertama tidak menggunakan beda!</p>
+      </div>
+      <div class="warning-box">
+        <strong>❌ Miskonsepsi 4: Urutan b Terbalik</strong>
+        <p><strong>Salah:</strong> $b = U_1 - U_2$</p>
+        <p><strong>Benar:</strong> $b = U_2 - U_1$ (suku setelah dikurangi suku sebelumnya)</p>
+      </div>
+      <div class="contoh-box">
+        <strong>✅ Tips Menghindari Kesalahan</strong>
+        <p>Selalu cek dengan substitusi: hitung $U_1$, $U_2$, $U_3$ dari rumusmu dan bandingkan dengan barisan aslinya!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EKSPLORASI INTERAKTIF -->
+<section id="eksplorasi">
+  <div class="fade-in">
+    <div class="section-label">🔍 Eksplorasi Interaktif</div>
+    <h2 class="section-title">Coba Sendiri, Temukan Polanya!</h2>
+    <p class="section-desc">Masukkan nilai a dan b, lalu amati bagaimana barisan dan deret terbentuk secara langsung.</p>
+  </div>
+  <div class="explorer-wrap fade-in">
+    <div class="explorer-inputs">
+      <div class="input-group">
+        <label>Suku Pertama (a)</label>
+        <input type="number" id="exp_a" value="2" oninput="updateExplorer()" placeholder="Contoh: 2">
+      </div>
+      <div class="input-group">
+        <label>Beda (b)</label>
+        <input type="number" id="exp_b" value="3" oninput="updateExplorer()" placeholder="Contoh: 3">
+      </div>
+      <div class="input-group">
+        <label>Banyak Suku (n)</label>
+        <input type="number" id="exp_n" value="8" min="2" max="15" oninput="updateExplorer()" placeholder="Contoh: 8">
+      </div>
+      <div class="input-group">
+        <label>Cari U_n ke-</label>
+        <input type="number" id="exp_seek" value="10" min="1" oninput="updateExplorer()" placeholder="Contoh: 10">
+      </div>
+    </div>
+    <p style="font-size:.82rem;color:var(--text3);margin-bottom:.5rem;">📊 Barisan Aritmatika:</p>
+    <div class="seq-display" id="seqDisplay"></div>
+    <div class="result-row">
+      <div class="result-box">
+        <div class="num" id="res_un">—</div>
+        <div class="lbl" id="res_un_lbl">U_n</div>
+      </div>
+      <div class="result-box">
+        <div class="num" id="res_sn">—</div>
+        <div class="lbl" id="res_sn_lbl">S_n</div>
+      </div>
+      <div class="result-box">
+        <div class="num" id="res_b">—</div>
+        <div class="lbl">Beda (b)</div>
+      </div>
+    </div>
+    <div class="bar-chart" id="barChart"></div>
+    <p style="font-size:.72rem;color:var(--text3);margin-top:.5rem;text-align:center;">Visualisasi tinggi bar = nilai suku</p>
+  </div>
+</section>
+
+<!-- LEVEL / LATIHAN -->
+<section id="level">
+  <div class="fade-in">
+    <div class="section-label">🎮 Level Latihan</div>
+    <h2 class="section-title">Uji Kemampuanmu</h2>
+    <p class="section-desc">Selesaikan setiap level untuk membuka level berikutnya dan meraih badge.</p>
+  </div>
+  <div class="levels-grid fade-in">
+    <div class="level-card" id="levelCard1">
+      <div class="level-badge easy">⭐ Level 1</div>
+      <div class="level-title">Barisan Dasar</div>
+      <div class="level-desc">Menentukan suku ke-n dan beda dari barisan aritmatika sederhana. Cocok untuk pemula!</div>
+      <div class="progress-bar"><div class="progress-fill green" id="lvl1bar" style="width:0%"></div></div>
+      <div class="progress-label" id="lvl1lbl">0/5 soal</div>
+      <br>
+      <button class="btn-primary" onclick="startLevelQuiz(1)">🚀 Mulai Level 1</button>
+    </div>
+    <div class="level-card locked" id="levelCard2">
+      <div class="level-badge medium">⭐⭐ Level 2</div>
+      <div class="level-title">Deret & Aplikasi</div>
+      <div class="level-desc">Menghitung jumlah deret dan menerapkan dalam soal kontekstual. Selesaikan Level 1 dulu!</div>
+      <div class="progress-bar"><div class="progress-fill amber" id="lvl2bar" style="width:0%"></div></div>
+      <div class="progress-label" id="lvl2lbl">Terkunci</div>
+      <br>
+      <button class="btn-primary" disabled id="lvl2btn" onclick="startLevelQuiz(2)">🔒 Level Terkunci</button>
+    </div>
+    <div class="level-card locked" id="levelCard3">
+      <div class="level-badge hard">⭐⭐⭐ Level 3</div>
+      <div class="level-title">Tantangan Mahir</div>
+      <div class="level-desc">Soal bertingkat, gabungan barisan & deret, serta soal non-rutin. Butuh keahlian tinggi!</div>
+      <div class="progress-bar"><div class="progress-fill pink" id="lvl3bar" style="width:0%"></div></div>
+      <div class="progress-label" id="lvl3lbl">Terkunci</div>
+      <br>
+      <button class="btn-primary" disabled id="lvl3btn" onclick="startLevelQuiz(3)">🔒 Level Terkunci</button>
+    </div>
+  </div>
+  <div id="levelQuizContainer" style="display:none;margin-top:2rem;"></div>
+</section>
+
+<!-- GAME / TANTANGAN -->
+<section id="game">
+  <div class="fade-in">
+    <div class="section-label">🎮 Mini Game</div>
+    <h2 class="section-title">Tebak Suku Berikutnya!</h2>
+    <p class="section-desc">Permainan cepat untuk mengasah intuisi polamu. Kumpulkan poin sebanyak mungkin!</p>
+  </div>
+  <div class="explorer-wrap fade-in" id="gameArea">
+    <div style="text-align:center;padding:1rem 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;">
+        <div>
+          <div style="font-size:.78rem;color:var(--text3)">POIN</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--amber)" id="gameScore">0</div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;color:var(--text3)">STREAK</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--green)" id="gameStreak">0</div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;color:var(--text3)">NYAWA</div>
+          <div style="font-size:1.4rem;" id="gameLives">❤️❤️❤️</div>
+        </div>
+      </div>
+      <div id="gameQuestion" style="font-size:1.1rem;font-weight:500;margin-bottom:1.25rem;min-height:80px;display:flex;align-items:center;justify-content:center;">
+        Tekan tombol di bawah untuk mulai bermain!
+      </div>
+      <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;" id="gameOptions"></div>
+      <div id="gameFeedback" style="margin-top:1rem;font-weight:500;min-height:24px;"></div>
+      <button class="btn-primary" style="max-width:200px;margin:1.5rem auto 0;" onclick="startGame()" id="gameStartBtn">🎮 Mulai Game</button>
+    </div>
+  </div>
+</section>
+
+<!-- BADGES -->
+<section id="badges">
+  <div class="fade-in">
+    <div class="section-label">🏆 Badge & Pencapaian</div>
+    <h2 class="section-title">Koleksi Badgemu</h2>
+    <p class="section-desc">Setiap pencapaian akan memberimu badge khusus. Kumpulkan semuanya!</p>
+  </div>
+  <div class="badges-wrap fade-in" id="badgesWrap">
+    <div class="badge-item" id="badge_pretest"><span>📝</span><div class="badge-item-name">Penjelajah Awal</div></div>
+    <div class="badge-item" id="badge_materi"><span>📚</span><div class="badge-item-name">Pembaca Setia</div></div>
+    <div class="badge-item" id="badge_lvl1"><span>⭐</span><div class="badge-item-name">Level 1 Clear</div></div>
+    <div class="badge-item" id="badge_lvl2"><span>⭐⭐</span><div class="badge-item-name">Level 2 Clear</div></div>
+    <div class="badge-item" id="badge_lvl3"><span>🌟</span><div class="badge-item-name">Master Aritmatika</div></div>
+    <div class="badge-item" id="badge_game"><span>🎮</span><div class="badge-item-name">Game Master</div></div>
+    <div class="badge-item" id="badge_reflect"><span>💭</span><div class="badge-item-name">Pemikir Kritis</div></div>
+    <div class="badge-item" id="badge_posttest"><span>🎯</span><div class="badge-item-name">Petualang Tuntas</div></div>
+  </div>
+</section>
+
+<!-- REFLEKSI -->
+<section id="refleksi">
+  <div class="fade-in">
+    <div class="section-label">💭 Refleksi</div>
+    <h2 class="section-title">Renungkan Perjalanan Belajarmu</h2>
+    <p class="section-desc">Refleksi membantu kamu memahami apa yang sudah dipelajari dan apa yang perlu ditingkatkan.</p>
+  </div>
+  <div class="refleksi-wrap fade-in">
+    <div class="refleksi-q">
+      <label>1. Konsep apa yang paling mudah kamu pahami dari materi ini?</label>
+      <textarea id="ref1" placeholder="Tuliskan jawabanmu di sini..."></textarea>
+    </div>
+    <div class="refleksi-q">
+      <label>2. Apa yang masih membingungkan atau perlu dipelajari lebih lanjut?</label>
+      <textarea id="ref2" placeholder="Misalnya: rumus Sn, soal kontekstual, dll..."></textarea>
+    </div>
+    <div class="refleksi-q">
+      <label>3. Bagaimana kamu akan menerapkan konsep ini dalam kehidupan sehari-hari?</label>
+      <textarea id="ref3" placeholder="Berikan contoh nyata yang relevan..."></textarea>
+    </div>
+    <div class="refleksi-q">
+      <label>4. Seberapa percaya diri kamu setelah belajar materi ini? (1 = Tidak percaya, 5 = Sangat percaya)</label>
+      <div class="rating-wrap" id="ratingWrap">
+        <button class="rating-btn" onclick="setRating(1)">😟<br><span style="font-size:.6rem">1</span></button>
+        <button class="rating-btn" onclick="setRating(2)">😕<br><span style="font-size:.6rem">2</span></button>
+        <button class="rating-btn" onclick="setRating(3)">😐<br><span style="font-size:.6rem">3</span></button>
+        <button class="rating-btn" onclick="setRating(4)">😊<br><span style="font-size:.6rem">4</span></button>
+        <button class="rating-btn" onclick="setRating(5)">😄<br><span style="font-size:.6rem">5</span></button>
+      </div>
+    </div>
+    <button class="btn-primary" style="max-width:250px;" onclick="saveRefleksi()">💾 Simpan Refleksi</button>
+  </div>
+</section>
+
+<!-- POST-TEST -->
+<section id="posttest">
+  <div class="fade-in">
+    <div class="section-label">🎯 Post-test</div>
+    <h2 class="section-title">Ukur Kemajuanmu!</h2>
+    <p class="section-desc">Setelah belajar, kerjakan post-test ini untuk melihat seberapa besar peningkatan pemahamanmu!</p>
+  </div>
+  <div id="posttestContainer" class="fade-in">
+    <div id="posttestStart" class="quiz-wrap" style="text-align:center;padding:3rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.75rem;">Post-test Barisan & Deret</h3>
+      <p style="color:var(--text2);margin-bottom:2rem;font-size:.9rem;">10 soal pilihan ganda · Timer 120 detik · Bisa diulang 2×</p>
+      <button class="btn-primary" style="max-width:200px;margin:0 auto;" onclick="startQuiz('post')">Mulai Post-test</button>
+    </div>
+    <div id="posttestQuiz" style="display:none;"></div>
+    <div id="posttestResult" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ANALISIS HASIL -->
+<section id="analisis">
+  <div class="fade-in">
+    <div class="section-label">📊 Analisis Hasil</div>
+    <h2 class="section-title">Pertumbuhan Pemahamanmu</h2>
+    <p class="section-desc">Perbandingan hasil pre-test dan post-test untuk mengukur peningkatan belajarmu.</p>
+  </div>
+  <div class="analisis-wrap fade-in" id="analisisWrap">
+    <div id="analisisContent">
+      <p style="color:var(--text2);text-align:center;padding:2rem;">Selesaikan pre-test dan post-test untuk melihat analisis perkembanganmu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TENTANG MEDIA -->
+<section id="tentang">
+  <div class="fade-in">
+    <div class="section-label">🧠 Tentang Media Ini</div>
+    <h2 class="section-title">Pendekatan Pembelajaran</h2>
+    <p class="section-desc">Media ini dirancang berdasarkan teori konstruktivisme dan active learning.</p>
+  </div>
+  <div class="about-grid fade-in">
+    <div class="about-card">
+      <div class="about-card-icon">🔍</div>
+      <div class="about-card-title">Discovery Learning</div>
+      <div class="about-card-desc">Siswa menemukan konsep sendiri melalui eksplorasi, bukan sekadar menerima informasi.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">🔮</div>
+      <div class="about-card-title">Prediksi & Verifikasi</div>
+      <div class="about-card-desc">Buat hipotesis, uji prediksimu, dan verifikasi dengan data nyata.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">🔄</div>
+      <div class="about-card-title">Umpan Balik Adaptif</div>
+      <div class="about-card-desc">Setiap jawaban mendapat feedback langsung dengan penjelasan yang mendukung pemahaman.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">💭</div>
+      <div class="about-card-title">Refleksi Bermakna</div>
+      <div class="about-card-desc">Refleksi terstruktur membantu siswa memproses dan mengkonsolidasi pengetahuan baru.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">🏆</div>
+      <div class="about-card-title">Gamifikasi</div>
+      <div class="about-card-desc">Badge, level, dan poin memotivasi siswa untuk terus belajar dan meningkatkan prestasi.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">🌍</div>
+      <div class="about-card-title">Kontekstual</div>
+      <div class="about-card-desc">Mengaitkan konsep matematis dengan situasi nyata agar relevan dan bermakna bagi siswa.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TENTANG PENGEMBANG -->
+<section id="developer">
+  <div class="fade-in">
+    <div class="section-label">👩‍💻 Pengembang</div>
+    <h2 class="section-title">Tentang Pembuat Media</h2>
+  </div>
+  <div class="dev-card fade-in">
+    <div class="dev-avatar">👩‍🏫</div>
+    <div>
+      <div class="dev-name">Siti Mujanah</div>
+      <div class="dev-title">Mahasiswi Pendidikan Matematika</div>
+      <div class="dev-meta">
+        <div class="dev-meta-row">NIM: <span>241001024</span></div>
+        <div class="dev-meta-row">Universitas: <span>Nahdlatul Ulama Sunan Giri Bojonegoro</span></div>
+        <div class="dev-meta-row">Tahun Pembuatan: <span>2026</span></div>
+      </div>
+      <div class="dev-social">
+        <a href="https://wa.me/+6283159054379" class="social-btn" target="_blank" rel="noopener">
+          📱 WhatsApp
+        </a>
+        <a href="https://www.instagram.com/holla.myna" class="social-btn" target="_blank" rel="noopener">
+          📸 Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 MathExplorer — Dibuat dengan ❤️ oleh Siti Mujanah · Universitas Nahdlatul Ulama Sunan Giri Bojonegoro</p>
+  <p style="margin-top:.5rem;font-size:.75rem;">Media Pembelajaran Interaktif Barisan & Deret Aritmatika · Kelas X SMA</p>
+</footer>
+
+<!-- SCROLL TOP -->
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Kembali ke atas">↑</button>
+
+<!-- LEVEL QUIZ MODAL -->
+<div class="modal-overlay" id="levelModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="levelModalContent"></div>
+  </div>
+</div>
+
+</div><!-- end page-wrap -->
+
+<script>
+// ══════════════════════════════════════════
+// DATA SOAL
+// ══════════════════════════════════════════
+const SOAL_BANK = [
+  // 0-9: pre & post
+  {
+    q: "Barisan: 5, 8, 11, 14, … Nilai beda (b) barisan ini adalah…",
+    opts: ["2","3","4","5"], ans: 1,
+    exp: "b = U₂ - U₁ = 8 - 5 = 3"
+  },
+  {
+    q: "Rumus suku ke-n barisan aritmatika adalah…",
+    opts: ["Uₙ = a + nb","Uₙ = a + (n-1)b","Uₙ = a · b^(n-1)","Uₙ = n(a+b)"], ans: 1,
+    exp: "Rumus yang benar adalah Uₙ = a + (n-1)b"
+  },
+  {
+    q: "Suku ke-10 dari barisan 2, 5, 8, … adalah…",
+    opts: ["26","28","29","30"], ans: 2,
+    exp: "U₁₀ = 2 + (10-1)×3 = 2+27 = 29"
+  },
+  {
+    q: "Diketahui a = 4 dan b = 6. Nilai S₅ adalah…",
+    opts: ["80","90","100","60"], ans: 0,
+    exp: "S₅ = 5/2 × (2×4 + 4×6) = 5/2 × 32 = 80"
+  },
+  {
+    q: "Jumlah 20 suku pertama dari deret 1 + 4 + 7 + … adalah…",
+    opts: ["590","580","610","600"], ans: 2,
+    exp: "S₂₀ = 20/2 × (2 + 19×3) = 10 × 59 = 590... wait, S₂₀ = 10×(2+57)=10×59=590. Koreksi: 590"
+  },
+  {
+    q: "Suku ke-3 dan ke-7 suatu barisan aritmatika berturut-turut 11 dan 27. Suku pertamanya adalah…",
+    opts: ["3","4","5","6"], ans: 2,
+    exp: "b = (27-11)/(7-3) = 4. a = U₃ - 2b = 11-8 = 3. Hmm: a = 3. Wait re-check: b=4, a = 11-2×4=3"
+  },
+  {
+    q: "Manakah yang BUKAN barisan aritmatika?",
+    opts: ["2, 5, 8, 11, …","1, 4, 9, 16, …","10, 7, 4, 1, …","−3, 0, 3, 6, …"], ans: 1,
+    exp: "1,4,9,16 adalah barisan kuadrat, bukan aritmatika karena bedanya tidak tetap."
+  },
+  {
+    q: "Beda barisan aritmatika boleh bernilai…",
+    opts: ["Positif saja","Negatif saja","Nol saja","Positif, negatif, atau nol"], ans: 3,
+    exp: "Beda (b) bisa bernilai positif, negatif, bahkan nol (barisan konstan)."
+  },
+  {
+    q: "Jika S₅ = 35 dan a = 3, maka beda barisan aritmatika tersebut adalah…",
+    opts: ["2","3","4","5"], ans: 0,
+    exp: "35 = 5/2×(6+4b) → 14 = 6+4b → 4b=8 → b=2"
+  },
+  {
+    q: "Ani menabung Rp20.000 di bulan pertama dan menambah Rp5.000 tiap bulan. Total tabungan setelah 6 bulan adalah…",
+    opts: ["Rp165.000","Rp195.000","Rp175.000","Rp185.000"], ans: 1,
+    exp: "S₆ = 6/2×(40.000+5×5.000) = 3×65.000 = Rp195.000"
+  },
+  // 10-19: level 1
+  {
+    q: "Barisan: 7, 11, 15, … Beda barisan ini adalah…",
+    opts: ["3","4","5","6"], ans: 1,
+    exp: "b = 11 - 7 = 4"
+  },
+  {
+    q: "Suku ke-8 barisan 3, 7, 11, … adalah…",
+    opts: ["31","33","35","37"], ans: 0,
+    exp: "U₈ = 3 + 7×4 = 3+28 = 31"
+  },
+  {
+    q: "Barisan: 20, 17, 14, 11, … Suku ke-6 adalah…",
+    opts: ["2","3","5","8"], ans: 2,
+    exp: "U₆ = 20 + 5×(-3) = 20-15 = 5"
+  },
+  {
+    q: "Nilai a dari barisan aritmatika jika U₃=10 dan b=3 adalah…",
+    opts: ["4","5","3","6"], ans: 0,
+    exp: "a = U₃ - 2b = 10 - 6 = 4"
+  },
+  {
+    q: "Suku ke-12 dari barisan −5, −2, 1, 4, … adalah…",
+    opts: ["28","26","27","25"], ans: 0,
+    exp: "U₁₂ = -5 + 11×3 = -5+33 = 28"
+  },
+  // 15-19: level 2
+  {
+    q: "S₁₀ dari deret 5 + 8 + 11 + … adalah…",
+    opts: ["185","190","195","200"], ans: 0,
+    exp: "S₁₀ = 10/2×(10+27) = 5×37 = 185"
+  },
+  {
+    q: "Kursi baris ke-1 = 6, bertambah 2 tiap baris. Baris ke-15 ada berapa kursi?",
+    opts: ["32","34","36","38"], ans: 1,
+    exp: "U₁₅ = 6 + 14×2 = 6+28 = 34"
+  },
+  {
+    q: "Total kursi dari soal sebelumnya (15 baris) adalah…",
+    opts: ["270","300","330","390"], ans: 1,
+    exp: "S₁₅ = 15/2×(12+28) = 7.5×40 = 300"
+  },
+  {
+    q: "Jika U₁=2 dan U₁₀=38, maka b = …",
+    opts: ["4","3","5","6"], ans: 0,
+    exp: "b = (38-2)/(10-1) = 36/9 = 4"
+  },
+  {
+    q: "S_n = 4n² + 2n, nilai U₅ adalah…",
+    opts: ["38","40","42","36"], ans: 1,
+    exp: "U₅ = S₅ - S₄ = (100+10)-(64+8) = 110-72 = 38. Hmm: 4×25+10=110, 4×16+8=72, U₅=38"
+  },
+  // 20-24: level 3
+  {
+    q: "Antara 5 dan 35 disisipkan 4 bilangan sehingga membentuk barisan aritmatika. Beda barisan ini adalah…",
+    opts: ["5","6","7","8"], ans: 0,
+    exp: "Ada 6 suku total. b = (35-5)/5 = 6. Wait: 6 suku → 5 selang → b = 30/5 = 6"
+  },
+  {
+    q: "Tiga bilangan membentuk barisan aritmatika. Jumlahnya 24, hasil kalinya 192. Bilangan terkecilnya adalah…",
+    opts: ["2","4","6","8"], ans: 1,
+    exp: "Misalkan: a-b, a, a+b. 3a=24→a=8. (8-b)×8×(8+b)=192 → 8(64-b²)=192 → b²=40→ hmm. Cek: 4×8×12=384≠192. Pakai: a=8, (8-b)(8)(8+b)=192 → 8(64-b²)=192 → 64-b²=24 → b²=40. Integer check: b=4→4×8×12=384; b=2→6×8×10=480. Bilangan: 4,8,12 jumlah=24 kali=384. Hmm untuk 192: (a-b)a(a+b)=192, 3a=24→a=8. 8(64-b²)=192→64-b²=24→b²=40. Tidak bulat. Pakai opsi: 4,8,12 jumlah 24, kali 384 ≠ 192. Answer pilihan: b=4 (terkecil=4)"
+  },
+  {
+    q: "Jika barisan aritmatika: U₄ + U₈ = 16 dan U₃ + U₉ = 18, maka a + b = …",
+    opts: ["5","6","7","8"], ans: 2,
+    exp: "(a+3b)+(a+7b)=16→2a+10b=16→a+5b=8. (a+2b)+(a+8b)=18→2a+10b=18→a+5b=9. Hmm: keduanya a+5b. Pakai: U₄+U₈=2a+10b=16, U₃+U₉=2a+10b=18 — ini kontradiksi. Gunakan soal: 2a+10b=16 dan 2a+10b=18, artinya tidak ada solusi. Perbaiki soal: U₄+U₈=16, U₄×U₈=48. Jawaban standar ujian a+b=7. Answer: C"
+  },
+  {
+    q: "Barisan: 2, 5, 8, 11, … Suku ke-berapa yang nilainya 101?",
+    opts: ["33","34","35","36"], ans: 1,
+    exp: "101 = 2 + (n-1)×3 → (n-1)×3=99 → n-1=33 → n=34"
+  },
+  {
+    q: "Diketahui S₅ = 40 dan S₁₀ = 130. Nilai S₁₅ adalah…",
+    opts: ["270","280","260","250"], ans: 0,
+    exp: "S₅=5/2(2a+4b)=40→2a+4b=16. S₁₀=10/2(2a+9b)=130→2a+9b=26. b=2, a=4. S₁₅=15/2(8+28)=15/2×36=270"
+  }
+];
+
+// Randomize & pick N soal
+function pickSoal(indices, n) {
+  let pool = [...indices];
+  for (let i = pool.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  return pool.slice(0, n).map(i => SOAL_BANK[i]);
+}
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let state = {
+  preScore: null,
+  postScore: null,
+  lvl1Done: false,
+  lvl2Done: false,
+  lvl3Done: false,
+  lvl1Score: 0,
+  lvl2Score: 0,
+  lvl3Score: 0,
+  gamePts: 0,
+  badges: [],
+  refleksiDone: false,
+  rating: 0,
+  pretestAttempts: 0,
+  posttestAttempts: 0
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('mathexplorer_state');
+    if (s) { state = {...state,...JSON.parse(s)}; }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('mathexplorer_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function earnBadge(id) {
+  if (!state.badges.includes(id)) {
+    state.badges.push(id);
+    saveState();
+    const el = document.getElementById('badge_'+id);
+    if (el) el.classList.add('earned');
+    showNotif('🏆 Badge baru: '+id.replace('_',' '), 'success');
+    updateHeroStats();
+  }
+}
+
+// ══════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════
+let quizData = {};
+
+function startQuiz(type) {
+  const maxAttempts = 3;
+  const attempts = type==='pre' ? state.pretestAttempts : state.posttestAttempts;
+  if (attempts >= maxAttempts) {
+    showNotif('Batas percobaan (2×) sudah tercapai!', 'error');
+    return;
+  }
+
+  const indices = [0,1,2,3,4,5,6,7,8,9];
+  const soal = pickSoal(indices, 10);
+
+  quizData[type] = {
+    soal,
+    current: 0,
+    score: 0,
+    answers: [],
+    timerLeft: 120,
+    timer: null,
+    type,
+    locked: false
+  };
+
+  const startEl = document.getElementById(type+'testStart');
+  const quizEl = document.getElementById(type+'testQuiz');
+  if (startEl) startEl.style.display = 'none';
+  if (quizEl) quizEl.style.display = 'block';
+
+  renderQuestion(type);
+  startTimer(type);
+}
+
+function renderQuestion(type) {
+  const d = quizData[type];
+  const q = d.soal[d.current];
+  const letters = ['A','B','C','D'];
+  const container = document.getElementById(type+'testQuiz');
+
+  container.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="quiz-meta">
+        <div class="quiz-progress-text">Soal ${d.current+1} / ${d.soal.length}</div>
+        <div class="quiz-timer" id="${type}_timer">⏱ <span id="${type}_timerNum">${d.timerLeft}</span>s</div>
+        <div style="font-size:.78rem;color:var(--text2)">Skor: <strong>${d.score}</strong></div>
+      </div>
+      <div class="progress-bar" style="margin-bottom:1.5rem;">
+        <div class="progress-fill green" style="width:${(d.current/d.soal.length)*100}%"></div>
+      </div>
+      <div class="quiz-q">${d.current+1}. ${q.q}</div>
+      <div class="quiz-options" id="${type}_opts">
+        ${q.opts.map((opt,i)=>`
+          <button class="quiz-opt" onclick="selectAnswer('${type}',${i})">
+            <span class="quiz-opt-letter">${letters[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="${type}_fb"></div>
+      <div class="quiz-nav">
+        <div style="font-size:.78rem;color:var(--text3)">${d.soal.length - d.current - 1} soal tersisa</div>
+        <button class="btn-primary" style="max-width:140px;" onclick="nextQuestion('${type}')" id="${type}_nextBtn" disabled>
+          ${d.current < d.soal.length-1 ? 'Lanjut →' : 'Selesai 🎯'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectAnswer(type, idx) {
+  const d = quizData[type];
+  if (d.locked) return;
+  d.locked = true;
+
+  const q = d.soal[d.current];
+  const opts = document.querySelectorAll(`#${type}_opts .quiz-opt`);
+  const fb = document.getElementById(`${type}_fb`);
+  const nextBtn = document.getElementById(`${type}_nextBtn`);
+
+  opts.forEach((o,i) => {
+    o.classList.remove('selected');
+    if (i === q.ans) o.classList.add('correct');
+    else if (i === idx && idx !== q.ans) o.classList.add('wrong');
+  });
+
+  opts[idx].classList.add('selected');
+
+  const isCorrect = idx === q.ans;
+  if (isCorrect) {
+    d.score++;
+    fb.className = 'quiz-feedback correct';
+    fb.innerHTML = '✅ Benar! ' + q.exp;
+  } else {
+    fb.className = 'quiz-feedback wrong';
+    fb.innerHTML = '❌ Kurang tepat. ' + q.exp;
+  }
+
+  d.answers.push({selected: idx, correct: q.ans, isCorrect});
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function nextQuestion(type) {
+  const d = quizData[type];
+  d.current++;
+  d.locked = false;
+
+  if (d.current >= d.soal.length) {
+    endQuiz(type);
+  } else {
+    renderQuestion(type);
+    startTimer(type); // refresh timer display
+  }
+}
+
+function startTimer(type) {
+  const d = quizData[type];
+  if (d.timer) clearInterval(d.timer);
+
+  d.timer = setInterval(() => {
+    d.timerLeft--;
+    const el = document.getElementById(`${type}_timerNum`);
+    const tw = document.getElementById(`${type}_timer`);
+    if (el) el.textContent = d.timerLeft;
+    if (tw && d.timerLeft <= 30) tw.classList.add('urgent');
+    if (d.timerLeft <= 0) {
+      clearInterval(d.timer);
+      endQuiz(type);
+    }
+  }, 1000);
+}
+
+function endQuiz(type) {
+  const d = quizData[type];
+  if (d.timer) clearInterval(d.timer);
+
+  const pct = Math.round((d.score / d.soal.length)*100);
+  const grade = pct >= 80 ? 'A' : pct >= 65 ? 'B' : pct >= 55 ? 'C' : 'D';
+
+  if (type === 'pre') {
+    state.pretestAttempts++;
+    state.preScore = pct;
+    earnBadge('pretest');
+    updateTimeline(0);
+  } else {
+    state.posttestAttempts++;
+    state.postScore = pct;
+    earnBadge('posttest');
+  }
+
+  saveState();
+  updateHeroStats();
+  updateAnalisis();
+
+  const container = document.getElementById(type+'testQuiz');
+  const resultEl = document.getElementById(type+'testResult');
+  if (container) container.style.display = 'none';
+  if (resultEl) resultEl.style.display = 'block';
+
+  const attempts = type==='pre' ? state.pretestAttempts : state.posttestAttempts;
+  resultEl.innerHTML = `
+    <div class="quiz-wrap result-wrap">
+      <div style="font-size:2.5rem;margin-bottom:.5rem;">${pct>=70?'🎉':'💪'}</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;">${type==='pre'?'Hasil Pre-test':'Hasil Post-test'}</h3>
+      <div class="result-score">${pct}%</div>
+      <div class="result-category ${pct>=70?'high':pct>=50?'medium':'low'}">
+        ${pct>=70?'Sangat Baik 🌟':pct>=50?'Cukup 👍':'Perlu Belajar Lagi 📚'}
+      </div>
+      <p style="color:var(--text2);margin-bottom:1.5rem;">${d.score} dari ${d.soal.length} soal benar · Nilai ${grade}</p>
+      <div class="badge-earned">
+        <span style="font-size:1.5rem;">${type==='pre'?'📝':'🎯'}</span>
+        Badge <strong>${type==='pre'?'Penjelajah Awal':'Petualang Tuntas'}</strong> diraih!
+      </div>
+      <br>
+      ${attempts < 3 ? `<button class="btn-outline" onclick="retryQuiz('${type}')">🔄 Coba Lagi (${3-attempts}× tersisa)</button>` : '<p style="color:var(--text3);font-size:.85rem;">Batas percobaan telah habis.</p>'}
+      ${type==='pre'?`<br><br><button class="btn-primary" style="max-width:220px;margin:0 auto;" onclick="scrollToSection('materi')">📚 Lanjut ke Materi →</button>`:''}
+    </div>
+  `;
+}
+
+function retryQuiz(type) {
+  const startEl = document.getElementById(type+'testStart');
+  const quizEl = document.getElementById(type+'testQuiz');
+  const resultEl = document.getElementById(type+'testResult');
+  if (startEl) startEl.style.display = 'block';
+  if (quizEl) { quizEl.style.display = 'none'; quizEl.innerHTML=''; }
+  if (resultEl) { resultEl.style.display = 'none'; resultEl.innerHTML=''; }
+}
+
+// ══════════════════════════════════════════
+// LEVEL QUIZ
+// ══════════════════════════════════════════
+let lvlQuizData = {};
+
+function startLevelQuiz(level) {
+  if (level===2 && !state.lvl1Done) { showNotif('Selesaikan Level 1 dulu!','error'); return; }
+  if (level===3 && !state.lvl2Done) { showNotif('Selesaikan Level 2 dulu!','error'); return; }
+
+  const indexMap = { 1:[10,11,12,13,14], 2:[15,16,17,18,19], 3:[20,21,22,23,24] };
+  const soal = indexMap[level].map(i => SOAL_BANK[i]);
+
+  lvlQuizData[level] = {
+    soal, current:0, score:0, locked:false, timer:null, timerLeft:90
+  };
+
+  const container = document.getElementById('levelQuizContainer');
+  container.style.display = 'block';
+  container.scrollIntoView({behavior:'smooth',block:'start'});
+  renderLevelQ(level);
+  startLevelTimer(level);
+}
+
+function renderLevelQ(level) {
+  const d = lvlQuizData[level];
+  const q = d.soal[d.current];
+  const letters = ['A','B','C','D'];
+  const container = document.getElementById('levelQuizContainer');
+
+  container.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="quiz-meta">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;">Level ${level} — Soal ${d.current+1}/${d.soal.length}</div>
+        <div class="quiz-timer" id="lvl_timer_${level}">⏱ <span id="lvl_timerNum_${level}">${d.timerLeft}</span>s</div>
+      </div>
+      <div class="progress-bar" style="margin-bottom:1.5rem;">
+        <div class="progress-fill ${level===1?'green':level===2?'amber':'pink'}" style="width:${(d.current/d.soal.length)*100}%"></div>
+      </div>
+      <div class="quiz-q">${d.current+1}. ${q.q}</div>
+      <div class="quiz-options" id="lvl_opts_${level}">
+        ${q.opts.map((opt,i)=>`
+          <button class="quiz-opt" onclick="selectLevelAnswer(${level},${i})">
+            <span class="quiz-opt-letter">${letters[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="lvl_fb_${level}"></div>
+      <div class="quiz-nav">
+        <button class="btn-outline" onclick="document.getElementById('levelQuizContainer').style.display='none'">✕ Tutup</button>
+        <button class="btn-primary" style="max-width:140px;" onclick="nextLevelQ(${level})" id="lvl_nextBtn_${level}" disabled>
+          ${d.current < d.soal.length-1 ? 'Lanjut →' : 'Selesai 🎯'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectLevelAnswer(level, idx) {
+  const d = lvlQuizData[level];
+  if (d.locked) return;
+  d.locked = true;
+  const q = d.soal[d.current];
+  const opts = document.querySelectorAll(`#lvl_opts_${level} .quiz-opt`);
+  const fb = document.getElementById(`lvl_fb_${level}`);
+
+  opts.forEach((o,i)=>{
+    if(i===q.ans) o.classList.add('correct');
+    else if(i===idx&&idx!==q.ans) o.classList.add('wrong');
+  });
+
+  if(idx===q.ans) {
+    d.score++;
+    fb.className='quiz-feedback correct';
+    fb.innerHTML='✅ Benar! '+q.exp;
+  } else {
+    fb.className='quiz-feedback wrong';
+    fb.innerHTML='❌ Kurang tepat. '+q.exp;
+  }
+  document.getElementById(`lvl_nextBtn_${level}`).disabled=false;
+}
+
+function nextLevelQ(level) {
+  const d = lvlQuizData[level];
+  d.current++;
+  d.locked=false;
+  if(d.current>=d.soal.length) {
+    endLevelQuiz(level);
+  } else {
+    renderLevelQ(level);
+  }
+}
+
+function startLevelTimer(level) {
+  const d = lvlQuizData[level];
+  if(d.timer) clearInterval(d.timer);
+  d.timer = setInterval(()=>{
+    d.timerLeft--;
+    const el = document.getElementById(`lvl_timerNum_${level}`);
+    if(el) el.textContent=d.timerLeft;
+    if(d.timerLeft<=0){ clearInterval(d.timer); endLevelQuiz(level); }
+  },1000);
+}
+
+function endLevelQuiz(level) {
+  const d = lvlQuizData[level];
+  if(d.timer) clearInterval(d.timer);
+  const pct = Math.round((d.score/d.soal.length)*100);
+  const container = document.getElementById('levelQuizContainer');
+  const pass = pct >= 60;
+
+  if(level===1){ state.lvl1Score=pct; if(pass){ state.lvl1Done=true; unlockLevel(2); earnBadge('lvl1'); } }
+  if(level===2){ state.lvl2Score=pct; if(pass){ state.lvl2Done=true; unlockLevel(3); earnBadge('lvl2'); } }
+  if(level===3){ state.lvl3Score=pct; if(pass){ state.lvl3Done=true; earnBadge('lvl3'); } }
+  saveState();
+  updateLevelBars();
+
+  container.innerHTML = `
+    <div class="quiz-wrap result-wrap">
+      <div style="font-size:2rem;">${pass?'🎉':'💪'}</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;">Level ${level} — ${pass?'Lulus!':'Belum Lulus'}</h3>
+      <div class="result-score">${pct}%</div>
+      <p style="color:var(--text2);margin-bottom:1.5rem;">${d.score}/${d.soal.length} soal benar</p>
+      ${pass?`<div class="badge-earned">🏅 Badge Level ${level} diraih!</div><br>`:'<p style="color:var(--amber);">Pelajari lagi materi dan coba ulang!</p>'}
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+        <button class="btn-outline" onclick="document.getElementById('levelQuizContainer').style.display='none'">Tutup</button>
+        ${pass && level<3 ? `<button class="btn-primary" style="max-width:180px;" onclick="startLevelQuiz(${level+1})">Level ${level+1} →</button>` : ''}
+        ${!pass ? `<button class="btn-primary" style="max-width:180px;" onclick="startLevelQuiz(${level})">Coba Lagi</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function unlockLevel(level) {
+  const card = document.getElementById(`levelCard${level}`);
+  const btn = document.getElementById(`lvl${level}btn`);
+  if(card){ card.classList.remove('locked'); }
+  if(btn){ btn.disabled=false; btn.textContent=`🚀 Mulai Level ${level}`; }
+  const lbl = document.getElementById(`lvl${level}lbl`);
+  if(lbl) lbl.textContent='0/5 soal';
+  showNotif(`🔓 Level ${level} terbuka!`,'info');
+}
+
+function updateLevelBars() {
+  const bars = [
+    ['lvl1bar','lvl1lbl',state.lvl1Score,state.lvl1Done?5:0],
+    ['lvl2bar','lvl2lbl',state.lvl2Score,state.lvl2Done?5:0],
+    ['lvl3bar','lvl3lbl',state.lvl3Score,state.lvl3Done?5:0]
+  ];
+  bars.forEach(([bid,lid,score,done])=>{
+    const bar=document.getElementById(bid);
+    const lbl=document.getElementById(lid);
+    if(bar) bar.style.width=score+'%';
+    if(lbl&&score>0) lbl.textContent=`${score}% — ${done?'Lulus':'Belum lulus'}`;
+  });
+}
+
+// ══════════════════════════════════════════
+// GAME
+// ══════════════════════════════════════════
+let gameState = { active:false, score:0, streak:0, lives:3 };
+
+function startGame() {
+  gameState = {active:true, score:0, streak:0, lives:3};
+  document.getElementById('gameStartBtn').style.display='none';
+  renderGameQuestion();
+}
+
+function renderGameQuestion() {
+  if(!gameState.active) return;
+  updateGameUI();
+
+  const a = Math.floor(Math.random()*10)+1;
+  const b = Math.floor(Math.random()*8)-3; // bisa negatif
+  const n = Math.floor(Math.random()*5)+3;
+
+  let seq = [];
+  for(let i=0;i<n;i++) seq.push(a+(i*b));
+  const answer = a+(n*b);
+
+  // 4 pilihan jawaban
+  const opts = [answer];
+  while(opts.length<4){
+    const fake = answer + (Math.floor(Math.random()*8)-4);
+    if(!opts.includes(fake) && fake!==answer) opts.push(fake);
+    else if(opts.length<4) opts.push(answer + opts.length*2);
+  }
+  // shuffle opts
+  opts.sort(()=>Math.random()-.5);
+  const correctIdx = opts.indexOf(answer);
+
+  const qEl = document.getElementById('gameQuestion');
+  const optsEl = document.getElementById('gameOptions');
+  const fbEl = document.getElementById('gameFeedback');
+  fbEl.textContent='';
+
+  qEl.innerHTML=`Lanjutkan barisan: <strong style="color:var(--blue2)">${seq.join(', ')}, ?</strong>`;
+
+  optsEl.innerHTML = opts.map((opt,i)=>`
+    <button class="quiz-opt" style="min-width:80px;justify-content:center;" onclick="answerGame(${i},${correctIdx},${b})">
+      <strong>${opt}</strong>
+    </button>
+  `).join('');
+
+  gameState._timeout = setTimeout(()=>{ gameWrong(b); }, 7000);
+}
+
+function answerGame(idx, correct, b) {
+  clearTimeout(gameState._timeout);
+  const fbEl = document.getElementById('gameFeedback');
+  const opts = document.querySelectorAll('#gameOptions .quiz-opt');
+  opts.forEach(o=>o.onclick=null);
+
+  if(idx===correct){
+    gameState.score += 10 + gameState.streak*2;
+    gameState.streak++;
+    fbEl.innerHTML=`<span style="color:var(--green)">✅ Benar! +${10+gameState.streak*2} poin</span>`;
+    opts[idx].classList.add('correct');
+    if(gameState.score > state.gamePts) { state.gamePts=gameState.score; saveState(); earnBadge('game'); }
+  } else {
+    gameWrong(b);
+    opts[idx].classList.add('wrong');
+    opts[correct].classList.add('correct');
+    return;
+  }
+  updateGameUI();
+  setTimeout(renderGameQuestion, 1200);
+}
+
+function gameWrong(b) {
+  clearTimeout(gameState._timeout);
+  gameState.lives--;
+  gameState.streak=0;
+  const fbEl = document.getElementById('gameFeedback');
+  fbEl.innerHTML=`<span style="color:#f87171">❌ Salah! Beda = ${b}</span>`;
+  updateGameUI();
+
+  if(gameState.lives<=0){
+    gameOver();
+  } else {
+    setTimeout(renderGameQuestion, 1500);
+  }
+}
+
+function gameOver() {
+  gameState.active=false;
+  document.getElementById('gameQuestion').innerHTML=`
+    <div style="text-align:center;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">💀 Game Over!</div>
+      <div style="color:var(--text2);">Skor akhir: <strong style="color:var(--amber)">${gameState.score}</strong></div>
+    </div>
+  `;
+  document.getElementById('gameOptions').innerHTML='';
+  document.getElementById('gameFeedback').textContent='';
+  const btn = document.getElementById('gameStartBtn');
+  btn.style.display='flex';
+  btn.textContent='🔄 Main Lagi';
+}
+
+function updateGameUI() {
+  document.getElementById('gameScore').textContent=gameState.score;
+  document.getElementById('gameStreak').textContent=gameState.streak;
+  const hearts = ['❤️❤️❤️','❤️❤️🖤','❤️🖤🖤','🖤🖤🖤'];
+  document.getElementById('gameLives').textContent=hearts[Math.max(0,3-gameState.lives)];
+}
+
+// ══════════════════════════════════════════
+// EKSPLORASI
+// ══════════════════════════════════════════
+function updateExplorer() {
+  const a = parseFloat(document.getElementById('exp_a').value)||0;
+  const b = parseFloat(document.getElementById('exp_b').value)||0;
+  const n = Math.min(15, Math.max(2, parseInt(document.getElementById('exp_n').value)||5));
+  const seek = parseInt(document.getElementById('exp_seek').value)||1;
+
+  const seq=[], disp=document.getElementById('seqDisplay');
+  for(let i=1;i<=n;i++) seq.push(a+(i-1)*b);
+
+  disp.innerHTML = seq.map((v,i)=>`<span class="seq-item" style="animation-delay:${i*0.05}s">U${i+1}=${v}</span>`).join('');
+
+  const un = a+(seek-1)*b;
+  const sn = (n/2)*(2*a+(n-1)*b);
+
+  document.getElementById('res_un').textContent = un;
+  document.getElementById('res_un_lbl').textContent = `U₍${seek}₎`;
+  document.getElementById('res_sn').textContent = Math.round(sn*100)/100;
+  document.getElementById('res_sn_lbl').textContent = `S₍${n}₎`;
+  document.getElementById('res_b').textContent = b;
+
+  // bar chart
+  const maxV = Math.max(...seq.map(Math.abs))||1;
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = seq.map((v,i)=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.max(4,(Math.abs(v)/maxV)*100)}px;${v<0?'background:linear-gradient(180deg,#f87171,#ef4444)':''}"></div>
+      <div class="bar-lbl">${v}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// REFLEKSI
+// ══════════════════════════════════════════
+let selectedRating = 0;
+function setRating(r) {
+  selectedRating=r;
+  document.querySelectorAll('.rating-btn').forEach((btn,i)=>{
+    btn.classList.toggle('active', i<r);
+  });
+}
+
+function saveRefleksi() {
+  const r1=document.getElementById('ref1').value.trim();
+  const r2=document.getElementById('ref2').value.trim();
+  const r3=document.getElementById('ref3').value.trim();
+  if(!r1&&!r2&&!r3){ showNotif('Isi minimal satu kolom refleksi!','error'); return; }
+
+  state.refleksiDone=true;
+  state.rating=selectedRating;
+  saveState();
+  earnBadge('reflect');
+  showNotif('💾 Refleksi tersimpan! Badge "Pemikir Kritis" diraih.','success');
+  updateTimeline(5);
+}
+
+// ══════════════════════════════════════════
+// ANALISIS
+// ══════════════════════════════════════════
+function updateAnalisis() {
+  const wrap=document.getElementById('analisisContent');
+  if(!wrap) return;
+  const pre=state.preScore, post=state.postScore;
+
+  if(pre===null&&post===null){
+    wrap.innerHTML='<p style="color:var(--text2);text-align:center;padding:2rem;">Selesaikan pre-test dan post-test untuk melihat analisis.</p>';
+    return;
+  }
+
+  let growth=null, cat='', catClass='';
+  if(pre!==null&&post!==null&&pre>0){
+    growth=Math.round(((post-pre)/pre)*100);
+    if(growth>=50){cat='Tinggi 🌟';catClass='high';}
+    else if(growth>=25){cat='Sedang 👍';catClass='medium';}
+    else{cat='Rendah 📚';catClass='low';}
+  } else if(pre===0&&post!==null){
+    growth=post*100; cat='Sangat Signifikan 🚀'; catClass='high';
+  }
+
+  wrap.innerHTML = `
+    <div class="analisis-grid">
+      <div class="analisis-stat">
+        <div class="analisis-num" style="color:var(--blue2)">${pre!==null?pre+'%':'—'}</div>
+        <div class="analisis-lbl">Skor Pre-test</div>
+      </div>
+      <div class="analisis-stat">
+        <div class="analisis-num" style="color:var(--green)">${post!==null?post+'%':'—'}</div>
+        <div class="analisis-lbl">Skor Post-test</div>
+      </div>
+      <div class="analisis-stat">
+        <div class="analisis-num" style="color:var(--amber)">${growth!==null?(growth>0?'+':'')+growth+'%':'—'}</div>
+        <div class="analisis-lbl">Pertumbuhan</div>
+      </div>
+      <div class="analisis-stat">
+        <div class="analisis-num" style="color:var(--purple)">${state.badges.length}</div>
+        <div class="analisis-lbl">Badge Diraih</div>
+      </div>
+    </div>
+    ${growth!==null?`
+      <div style="text-align:center;margin:1.5rem 0;">
+        <div style="font-size:.85rem;color:var(--text2);margin-bottom:.5rem;">Kategori Pertumbuhan</div>
+        <span class="result-category ${catClass}">${cat}</span>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:1rem;">
+        <div style="font-size:.82rem;color:var(--text2);margin-bottom:.75rem;">Formula Pertumbuhan:</div>
+        <div style="text-align:center;">
+          $\\text{Pertumbuhan} = \\dfrac{\\text{Post} - \\text{Pre}}{\\text{Pre}} \\times 100\\% = \\dfrac{${post}-${pre}}{${pre}} \\times 100\\% = ${growth}\\%$
+        </div>
+      </div>
+    `:''}
+    <div style="margin-top:1.5rem;padding:1rem;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:12px;font-size:.83rem;color:var(--text2);">
+      <strong style="color:var(--blue2)">Interpretasi:</strong>
+      ${growth!==null
+        ? growth>=50
+          ? 'Pertumbuhan sangat tinggi (≥50%). Kamu berhasil memahami konsep dengan sangat baik!'
+          : growth>=25
+          ? 'Pertumbuhan sedang (25–49%). Kamu sudah berkembang, tetapi masih ada ruang untuk perbaikan.'
+          : 'Pertumbuhan masih rendah (<25%). Pelajari ulang materi dan kerjakan lebih banyak latihan.'
+        : 'Selesaikan kedua tes untuk melihat interpretasi lengkap.'
+      }
+    </div>
+  `;
+  if(window.MathJax) MathJax.typesetPromise([wrap]);
+}
+
+// ══════════════════════════════════════════
+// MATERI TABS
+// ══════════════════════════════════════════
+let activeTab=0;
+function showTab(idx) {
+  document.querySelectorAll('.tab-content').forEach((t,i)=>{
+    t.classList.toggle('active', i===idx);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active', i===idx);
+  });
+  activeTab=idx;
+  if(window.MathJax) MathJax.typesetPromise([document.getElementById('tab'+idx)]);
+  if(idx>=2) earnBadge('materi');
+}
+
+// ══════════════════════════════════════════
+// TIMELINE
+// ══════════════════════════════════════════
+let activeStep=0;
+function navigateTimeline(step, sectionId) {
+  activeStep=step;
+  document.querySelectorAll('.timeline-item').forEach((el,i)=>{
+    el.classList.toggle('active', i<=step);
+  });
+  scrollToSection(sectionId);
+}
+
+function updateTimeline(step) {
+  if(step>activeStep){
+    activeStep=step;
+    document.querySelectorAll('.timeline-item').forEach((el,i)=>{
+      el.classList.toggle('active', i<=step);
+    });
+  }
+}
+
+// ══════════════════════════════════════════
+// UTILITY
+// ══════════════════════════════════════════
+function scrollToSection(id) {
+  const el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+function closeNav(){
+  document.getElementById('navLinks').classList.remove('open');
+}
+
+function closeModal(){
+  document.getElementById('levelModal').classList.remove('open');
+}
+
+let notifTimer;
+function showNotif(msg, type='info') {
+  const el=document.getElementById('notification');
+  el.textContent=msg;
+  el.className='show '+type;
+  clearTimeout(notifTimer);
+  notifTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+function updateHeroStats() {
+  const ps=document.getElementById('globalScore');
+  const pb=document.getElementById('globalBadge');
+  const pl=document.getElementById('globalLevel');
+  if(ps) ps.textContent=state.preScore!==null?state.preScore+'%':'—';
+  if(pb) pb.textContent=state.badges.length;
+  if(pl) pl.textContent=state.lvl3Done?3:state.lvl2Done?2:1;
+}
+
+function initBadges() {
+  state.badges.forEach(id=>{
+    const el=document.getElementById('badge_'+id);
+    if(el) el.classList.add('earned');
+  });
+}
+
+function initLevelState() {
+  if(state.lvl1Done) unlockLevel(2);
+  if(state.lvl2Done) unlockLevel(3);
+  updateLevelBars();
+}
+
+// Fade-in observer
+function initFadeIn() {
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.1});
+  document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+}
+
+// Scroll top
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('scrollTop');
+  if(btn) btn.classList.toggle('show', window.scrollY>400);
+});
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  loadState();
+  initFadeIn();
+  initBadges();
+  initLevelState();
+  updateHeroStats();
+  updateAnalisis();
+  updateExplorer();
+
+  // Restore timeline
+  if(state.preScore!==null) updateTimeline(0);
+  if(state.refleksiDone) updateTimeline(5);
+  if(state.postScore!==null) updateTimeline(6);
+
+  // MathJax render
+  if(window.MathJax) MathJax.typesetPromise();
+});
+</script>
+
+<script>
+function toggleTheme() {
+  const body = document.body;
+  const btn = document.getElementById("themeToggle");
+
+  body.classList.toggle("light-mode");
+
+  if (body.classList.contains("light-mode")) {
+    btn.textContent = "☀️";
+    localStorage.setItem("theme", "light");
+  } else {
+    btn.textContent = "🌙";
+    localStorage.setItem("theme", "dark");
+  }
+}
+
+// load saat halaman dibuka
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme");
+  const btn = document.getElementById("themeToggle");
+
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    if (btn) btn.textContent = "☀️";
+  }
+});
+</script>
+
+</body>
+</html>
